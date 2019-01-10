@@ -5,28 +5,35 @@ import "mocha";
 import * as dotenv from "dotenv";
 import * as chai from "chai";
 const should = chai.should();
-import * as chaiAsPromised from "chai-as-promised";
+import chaiAsPromised from "chai-as-promised";
 chai.use(chaiAsPromised);
-import * as debugModule from "debug";
+import debugModule from "debug";
 const debug = debugModule("azure:eph:iothub-spec");
 import {
-  EventPosition, OnReceivedError, PartitionContext, EventData, OnReceivedMessage, EventProcessorHost
+  EventPosition,
+  OnReceivedError,
+  PartitionContext,
+  EventData,
+  OnReceivedMessage,
+  EventProcessorHost
 } from "../lib";
 import { delay } from "@azure/event-hubs";
 dotenv.config();
 
-describe("EPH with iothub connection string", function () {
+describe("EPH with iothub connection string", function() {
   this.timeout(60000);
   const iothubConnString = process.env.IOTHUB_CONNECTION_STRING;
   const storageConnString = process.env.STORAGE_CONNECTION_STRING;
   const hostName = EventProcessorHost.createHostName();
   let host: EventProcessorHost;
-  before("validate environment", async function () {
-    should.exist(process.env.IOTHUB_CONNECTION_STRING,
-      "define IOTHUB_CONNECTION_STRING in your environment before running integration tests.");
+  before("validate environment", async function() {
+    should.exist(
+      process.env.IOTHUB_CONNECTION_STRING,
+      "define IOTHUB_CONNECTION_STRING in your environment before running integration tests."
+    );
   });
 
-  it("should be able to receive messages from the event hub associated with an iothub.", function (done) {
+  it("should be able to receive messages from the event hub associated with an iothub.", function(done) {
     const test = async () => {
       try {
         host = await EventProcessorHost.createFromIotHubConnectionString(
@@ -40,10 +47,18 @@ describe("EPH with iothub connection string", function () {
             leaseRenewInterval: 10
           }
         );
-        const onMessage: OnReceivedMessage = (context: PartitionContext, data: EventData) => {
-          debug(">>> [%s] Rx message from '%s': '%O'", hostName, context.partitionId, data);
+        const onMessage: OnReceivedMessage = (
+          context: PartitionContext,
+          data: EventData
+        ) => {
+          debug(
+            ">>> [%s] Rx message from '%s': '%O'",
+            hostName,
+            context.partitionId,
+            data
+          );
         };
-        const onError: OnReceivedError = (err) => {
+        const onError: OnReceivedError = err => {
           debug("An error occurred while receiving the message: %O", err);
           throw err;
         };
@@ -57,7 +72,13 @@ describe("EPH with iothub connection string", function () {
       } catch (err) {
         throw err;
       }
-    }
-    test().then(() => { done(); }).catch((err) => { done(err); });
+    };
+    test()
+      .then(() => {
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
   });
 });

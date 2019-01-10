@@ -13,7 +13,8 @@
     "noUnusedLocals":true,
     "strict": true,
     "declaration": true,
-    "declarationDir": "./typings"
+    "declarationDir": "./typings",
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "exclude": [

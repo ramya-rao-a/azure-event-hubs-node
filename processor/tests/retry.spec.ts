@@ -4,15 +4,15 @@
 import "mocha";
 import * as chai from "chai";
 import { retry, RetryConfig } from "../lib/util/utils";
-import * as chaiAsPromised from "chai-as-promised";
+import chaiAsPromised from "chai-as-promised";
 import { delay } from "@azure/event-hubs";
 chai.use(chaiAsPromised);
-import * as debugModule from "debug";
+import debugModule from "debug";
 const should = chai.should();
 const debug = debugModule("azure:eph:retry-spec");
 
-describe("retry function", function () {
-  it("should succeed if the operation succeeds.", function (done) {
+describe("retry function", function() {
+  it("should succeed if the operation succeeds.", function(done) {
     const test = async () => {
       let counter = 0;
       try {
@@ -23,7 +23,7 @@ describe("retry function", function () {
             return {
               code: 200,
               description: "OK"
-            }
+            };
           },
           hostName: "eph-1",
           action: "Succeed",
@@ -36,14 +36,23 @@ describe("retry function", function () {
         result.description.should.equal("OK");
         counter.should.equal(1);
       } catch (err) {
-        debug("An error occurred in a test that should have succeeded: %O", err);
+        debug(
+          "An error occurred in a test that should have succeeded: %O",
+          err
+        );
         throw err;
       }
     };
-    test().then(() => { done(); }).catch((err) => { done(err); });
+    test()
+      .then(() => {
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
   });
 
-  it("should succeed if the operation initially fails and then succeeds.", function (done) {
+  it("should succeed if the operation initially fails and then succeeds.", function(done) {
     const test = async () => {
       let counter = 0;
       try {
@@ -68,14 +77,23 @@ describe("retry function", function () {
         result.toString().should.equal("0,1");
         counter.should.equal(2);
       } catch (err) {
-        debug("An error occurred in a test that should have succeeded: %O", err);
+        debug(
+          "An error occurred in a test that should have succeeded: %O",
+          err
+        );
         throw err;
       }
     };
-    test().then(() => { done(); }).catch((err) => { done(err); });
+    test()
+      .then(() => {
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
   });
 
-  it("should succeed in the last attempt.", function (done) {
+  it("should succeed in the last attempt.", function(done) {
     const test = async () => {
       let counter = 0;
       try {
@@ -107,14 +125,23 @@ describe("retry function", function () {
         result.description.should.equal("OK");
         counter.should.equal(3);
       } catch (err) {
-        debug("An error occurred in a test that should have succeeded: %O", err);
+        debug(
+          "An error occurred in a test that should have succeeded: %O",
+          err
+        );
         throw err;
       }
     };
-    test().then(() => { done(); }).catch((err) => { done(err); });
+    test()
+      .then(() => {
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
   });
 
-  it("should fail if all attempts return an error", function (done) {
+  it("should fail if all attempts return an error", function(done) {
     const test = async () => {
       let counter = 0;
       try {
@@ -140,9 +167,17 @@ describe("retry function", function () {
         err.hostName.should.equal("eph-1");
         err.partitionId.should.equal("1");
         should.exist(err.error);
-        err.error.message.should.match(/Out of retry attempts, still failing!! while performing the action "Fail after 5 attempts" due to Error\: I would always like to fail, keep retrying.*/ig);
+        err.error.message.should.match(
+          /Out of retry attempts, still failing!! while performing the action "Fail after 5 attempts" due to Error\: I would always like to fail, keep retrying.*/gi
+        );
       }
     };
-    test().then(() => { done(); }).catch((err) => { done(err); });
+    test()
+      .then(() => {
+        done();
+      })
+      .catch(err => {
+        done(err);
+      });
   });
 });
