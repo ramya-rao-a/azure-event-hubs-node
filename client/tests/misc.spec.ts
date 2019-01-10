@@ -2,7 +2,7 @@
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
 import "mocha";
-import * as uuid from "uuid/v4";
+import uuid from "uuid/v4";
 import * as chai from "chai";
 import * as assert from "assert";
 const should = chai.should();
