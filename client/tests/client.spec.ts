@@ -62,13 +62,31 @@ describe("EventHubClient", function() {
       });
     });
 
-    it("throws when it cannot find the Event Hub path", function() {
+    it("throws when connectionString is malformed", function() {
       const test = function() {
         return EventHubClient.createFromConnectionString("abc");
       };
       test.should.throw(
         Error,
-        `Either provide "path" or the "connectionString": "abc", must contain EntityPath="<path-to-the-entity>".`
+        "Connection string malformed: each part of the connection string must have an `=` assignment."
+      );
+    });
+
+    it("throws when it cannot find the Endpoint", function() {
+      const test = function() {
+        return EventHubClient.createFromConnectionString("abc=def");
+      };
+      test.should.throw(Error, "Connection string is missing Endpoint.");
+    });
+
+    it("throws when it cannot find the Event Hub path", function() {
+      const connectionString = "Endpoint=blah;abc=def";
+      const test = function() {
+        return EventHubClient.createFromConnectionString(connectionString);
+      };
+      test.should.throw(
+        Error,
+        `Either provide "path" or the "connectionString": "${connectionString}", must contain EntityPath="<path-to-the-entity>".`
       );
     });
 
