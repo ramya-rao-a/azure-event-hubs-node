@@ -104,6 +104,11 @@ export class ReceiveHandler {
   async stop(): Promise<void> {
     if (this._receiver) {
       try {
+        if (this._receiver.isConnecting) {
+          log.receiver("Stopping receiver that is still connecting");
+        } else {
+          log.receiver("Stopping receiver");
+        }
         await this._receiver.close();
       } catch (err) {
         log.error("An error occurred while stopping the receiver '%s' with address '%s': %O",

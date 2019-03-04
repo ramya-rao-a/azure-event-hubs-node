@@ -4,7 +4,7 @@
 import uuid from "uuid/v4";
 import { defaultLock } from "@azure/amqp-common";
 import { ConnectionContext } from "./connectionContext";
-import { Sender, Receiver } from "rhea-promise";
+import { Sender, Receiver, ReceiverEvents } from "rhea-promise";
 import * as log from "./log";
 export interface LinkEntityOptions {
   /**
@@ -168,6 +168,16 @@ export class LinkEntity {
     clearTimeout(this._tokenRenewalTimer as NodeJS.Timer);
     if (link) {
       try {
+        link.removeAllListeners(ReceiverEvents.message);
+        link.removeAllListeners(ReceiverEvents.receiverOpen);
+        link.removeAllListeners(ReceiverEvents.receiverDrained);
+        link.removeAllListeners(ReceiverEvents.receiverError);
+        link.removeAllListeners(ReceiverEvents.receiverClose);
+        link.removeAllListeners(ReceiverEvents.settled);
+        if (!link.isOpen()) {
+          log.link("[%s] %s '%s' with address '%s' is not open. Why close it?", this._context.connectionId, this._type,
+          this.name, this.address);
+        }
         // This should take care of closing the link and it's underlying session. This should also
         // remove them from the internal map.
         await link.close();

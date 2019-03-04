@@ -134,24 +134,35 @@ export class EventHubClient {
   async close(): Promise<void> {
     try {
       if (this._context.connection.isOpen()) {
+        log.client("Connection is open, lets close things");
         // Close all the senders.
         for (const senderName of Object.keys(this._context.senders)) {
+          log.client("Closing a sender");
           await this._context.senders[senderName].close();
         }
         // Close all the receivers.
         for (const receiverName of Object.keys(this._context.receivers)) {
+          log.client("Closing a receiver");
           await this._context.receivers[receiverName].close();
         }
+
+        log.client("Closing cbs session");
         // Close the cbs session;
         await this._context.cbsSession.close();
         // Close the management session
+
+        log.client("Closing management session");
         await this._context.managementSession!.close();
+
+        log.client("Closing connection");
         await this._context.connection.close();
         this._context.wasConnectionCloseCalled = true;
         log.client("Closed the amqp connection '%s' on the client.", this._context.connectionId);
+      } else {
+        log.client(`Connection is not open, nothing to close? ${Object.keys(this._context.receivers).length} receivers to close`);
       }
     } catch (err) {
-      const msg = `An error occurred while closing the connection "${this._context.connectionId}": ${JSON.stringify(err)}`;
+      const msg = `An error occurred while closing the connection "${this._context.connectionId}": ${err}`;
       log.error(msg);
       throw new Error(msg);
     }

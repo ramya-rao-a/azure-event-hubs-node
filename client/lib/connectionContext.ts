@@ -97,6 +97,7 @@ export namespace ConnectionContext {
     };
 
     const disconnected: OnAmqpEvent = async (context: EventContext) => {
+      log.error("disconnected event got");
       const connectionError = context.connection && context.connection.error
         ? context.connection.error
         : undefined;

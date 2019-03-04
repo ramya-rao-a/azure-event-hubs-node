@@ -4,13 +4,9 @@
 import {
   EventHubClient, EventPosition, OnMessage, OnError, MessagingError, ReceiveOptions, delay
 } from "../lib";
-import dotenv from "dotenv";
-dotenv.config();
 
-const connectionString = "EVENTHUB_CONNECTION_STRING";
-const entityPath = "EVENTHUB_NAME";
-const str = process.env[connectionString] || "";
-const path = process.env[entityPath] || "";
+const str = "Endpoint=sb://playground-event-hubs.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=W9xHs9lsNo6bfl1oGXPNbxdVX1RsT7QIxQPFtJ+jo0g=";
+const path = "ramya-event-hub";
 
 
 async function main(): Promise<void> {
@@ -23,15 +19,16 @@ async function main(): Promise<void> {
     console.log(">>>>> Error occurred: ", err);
   };
   const options: ReceiveOptions = {
-    // Receive messages starting from the last 1 hour.
-    eventPosition: EventPosition.fromEnqueuedTime(Date.now() - (60 * 60 * 1000)),
+    // Receive messages starting from the start.
+    eventPosition: EventPosition.fromStart(),
     enableReceiverRuntimeMetric: true
   };
   const rcvHandler = client.receive(partitionIds[0], onMessage, onError, options);
-  console.log("rcvHandler: ", rcvHandler.name);
-  await delay(10000);
+  
+  await delay(100);
+  console.log("Stopping rcvHandler: ", rcvHandler.name);
   await rcvHandler.stop();
-  console.log("Closed the receiver after receiving messages for 10 seconds.");
+  console.log("Closing client after 100 milliseconds.");
   await client.close();
 }
 

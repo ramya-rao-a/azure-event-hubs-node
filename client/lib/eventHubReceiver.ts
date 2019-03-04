@@ -212,8 +212,8 @@ export class EventHubReceiver extends LinkEntity {
         this.runtimeInfo.lastEnqueuedTimeUtc = evData.lastEnqueuedTime;
         this.runtimeInfo.lastEnqueuedOffset = evData.lastEnqueuedOffset;
         this.runtimeInfo.retrievalTime = evData.retrievalTime;
-        log.receiver("[%s] RuntimeInfo of Receiver '%s' is %O", this._context.connectionId,
-          this.name, this.runtimeInfo);
+     //   log.receiver("[%s] RuntimeInfo of Receiver '%s' is %O", this._context.connectionId,
+       //   this.name, this.runtimeInfo);
       }
       this._onMessage!(evData);
     };
@@ -399,6 +399,8 @@ export class EventHubReceiver extends LinkEntity {
       const receiverLink = this._receiver;
       this._deleteFromCache();
       await this._closeLink(receiverLink);
+    } else {
+      log.receiver("Nothing to close insider reciever.close()");
     }
   }
 
